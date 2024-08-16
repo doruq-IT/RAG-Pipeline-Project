@@ -73,9 +73,7 @@ st.markdown("""
 st.markdown("<h1>RAG Pipeline with BeyondLLM</h1>", unsafe_allow_html=True)
 
 # Kullanıcıdan YouTube video linkini alma
-st.markdown("<div class='input-section'>", unsafe_allow_html=True)
 video_url = st.text_input("Enter the YouTube video URL:", "https://www.youtube.com/watch?v=ZM1bdh2mDJQ", key="video_url", label_visibility="collapsed")
-st.markdown("</div>", unsafe_allow_html=True)
 
 # Veri yükleme ve embedding işlemleri
 if st.button("Process Video", key="process_button"):
@@ -102,14 +100,13 @@ if st.button("Process Video", key="process_button"):
         st.success("Video processed successfully!")
 
 # Kullanıcıdan sorgu alma
-st.markdown("<div class='input-section'>", unsafe_allow_html=True)
 question = st.text_input("Enter your question:", key="question", label_visibility="collapsed")
-st.markdown("</div>", unsafe_allow_html=True)
 
 # Model ve sorgu sonuçlarını gösterme
 if st.button("Get Answer", key="answer_button"):
-    st.markdown("<div class='result-section'>", unsafe_allow_html=True)
     if 'retriever' in st.session_state:
+        st.markdown("<div class='result-section'>", unsafe_allow_html=True)
+        
         llm = llms.HuggingFaceHubModel(
             model="mistralai/Mistral-7B-Instruct-v0.2",
             token=os.environ.get('HF_TOKEN')
@@ -125,7 +122,7 @@ if st.button("Get Answer", key="answer_button"):
         
         pipeline = generator.Generate(
             question=question,
-            retriever=st.session_state['retriever'],  # Session state'ten retriever'ı çekiyoruz
+            retriever=st.session_state['retriever'],
             system_prompt=system_prompt,
             llm=llm
         )
@@ -138,4 +135,3 @@ if st.button("Get Answer", key="answer_button"):
         st.markdown(f"<p><strong>RAG Triad Değerlendirmesi:</strong> <span class='highlight'>{rag_evals}</span></p>", unsafe_allow_html=True)
     else:
         st.error("Please process the video before asking a question.")
-    st.markdown("</div>", unsafe_allow_html=True)
