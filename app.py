@@ -27,7 +27,8 @@ if st.button("Process Video"):
         model_name = 'BAAI/bge-small-en-v1.5'
         embed_model = embeddings.HuggingFaceEmbeddings(model_name=model_name)
         
-        retriever = retrieve.auto_retriever(
+        # Retriever'ı session state'e kaydetme
+        st.session_state['retriever'] = retrieve.auto_retriever(
             data=data,
             embed_model=embed_model,
             type="cross-rerank",
@@ -42,24 +43,23 @@ question = st.text_input("Enter your question:")
 
 # Model ve sorgu sonuçlarını gösterme
 if st.button("Get Answer"):
-    llm = llms.HuggingFaceHubModel(
-        model="mistralai/Mistral-7B-Instruct-v0.2",
-        token=os.environ.get('HF_TOKEN')
-    )
-    
-    system_prompt = f"""
-    <s>[INST]
-    You are an AI Assistant.
-    Please provide direct answers to questions.
-    [/INST]
-    </s>
-    """
-    
-    # retriever doğru sırada kullanılmalı
-    if 'retriever' in locals():
+    if 'retriever' in st.session_state:
+        llm = llms.HuggingFaceHubModel(
+            model="mistralai/Mistral-7B-Instruct-v0.2",
+            token=os.environ.get('HF_TOKEN')
+        )
+        
+        system_prompt = f"""
+        <s>[INST]
+        You are an AI Assistant.
+        Please provide direct answers to questions.
+        [/INST]
+        </s>
+        """
+        
         pipeline = generator.Generate(
             question=question,
-            retriever=retriever,
+            retriever=st.session_state['retriever'],  # Session state'ten retriever'ı çekiyoruz
             system_prompt=system_prompt,
             llm=llm
         )
