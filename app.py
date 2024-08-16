@@ -29,9 +29,24 @@ st.markdown("""
             padding: 20px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333333;
+        }
+        .text-input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #dddddd;
+            margin-bottom: 20px;
         }
         .button {
-            display: block;
+            display: inline-block;
             width: 100%;
             background-color: #0073e6;
             color: white;
@@ -39,8 +54,6 @@ st.markdown("""
             border-radius: 10px;
             text-align: center;
             font-weight: bold;
-            margin-top: 10px;
-            margin-bottom: 10px;
             cursor: pointer;
             transition: background-color 0.3s;
         }
@@ -52,6 +65,7 @@ st.markdown("""
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
         }
         .highlight {
             background-color: #ffefc3;
@@ -66,7 +80,8 @@ st.markdown("<h1>RAG Pipeline with BeyondLLM</h1>", unsafe_allow_html=True)
 
 # Kullanıcıdan YouTube video linkini alma
 st.markdown("<div class='input-section'>", unsafe_allow_html=True)
-video_url = st.text_input("Enter the YouTube video URL:", "https://www.youtube.com/watch?v=ZM1bdh2mDJQ")
+st.text("Enter the YouTube video URL:")
+video_url = st.text_input("", "https://www.youtube.com/watch?v=ZM1bdh2mDJQ", key="video_url")
 st.markdown("</div>", unsafe_allow_html=True)
 
 # Veri yükleme ve embedding işlemleri
@@ -95,7 +110,8 @@ if st.button("Process Video", key="process_button"):
 
 # Kullanıcıdan sorgu alma
 st.markdown("<div class='input-section'>", unsafe_allow_html=True)
-question = st.text_input("Enter your question:")
+st.text("Enter your question:")
+question = st.text_input("", key="question")
 st.markdown("</div>", unsafe_allow_html=True)
 
 # Model ve sorgu sonuçlarını gösterme
