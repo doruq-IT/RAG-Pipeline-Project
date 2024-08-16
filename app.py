@@ -12,7 +12,7 @@ os.environ['HUGGINGFACE_ACCESS_TOKEN'] = os.environ['HF_TOKEN']
 st.markdown("""
     <style>
         .main {
-            background-color: #f0f0f0;
+            background-color: #f8f9fa;
             padding: 20px;
             border-radius: 10px;
         }
@@ -53,6 +53,15 @@ st.markdown("""
             padding: 20px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
+        .spacer {
+            height: 10px;
+        }
+        .highlight {
+            background-color: #ffefc3;
+            padding: 5px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
     </style>
 """, unsafe_allow_html=True)
 
@@ -61,6 +70,7 @@ st.markdown("<h1>RAG Pipeline with BeyondLLM</h1>", unsafe_allow_html=True)
 # Kullanıcıdan YouTube video linkini alma
 st.markdown("<div class='input-section'>", unsafe_allow_html=True)
 video_url = st.text_input("Enter the YouTube video URL:", "https://www.youtube.com/watch?v=ZM1bdh2mDJQ")
+st.markdown("</div>", unsafe_allow_html=True)
 
 # Veri yükleme ve embedding işlemleri
 if st.button("Process Video", key="process_button"):
@@ -85,7 +95,8 @@ if st.button("Process Video", key="process_button"):
         )
         
         st.success("Video processed successfully!")
-st.markdown("</div>", unsafe_allow_html=True)
+
+st.markdown("<div class='spacer'></div>", unsafe_allow_html=True)
 
 # Kullanıcıdan sorgu alma
 st.markdown("<div class='input-section'>", unsafe_allow_html=True)
@@ -117,11 +128,11 @@ if st.button("Get Answer", key="answer_button"):
         )
         
         response = pipeline.call()
-        st.write(f"<strong>Model yanıtı:</strong> {response}", unsafe_allow_html=True)
+        st.markdown(f"<p><strong>Model yanıtı:</strong> <span class='highlight'>{response}</span></p>", unsafe_allow_html=True)
         
         # RAG Triad değerlendirme sonuçlarını gösterme
         rag_evals = pipeline.get_rag_triad_evals()
-        st.write(f"<strong>RAG Triad Değerlendirmesi:</strong> {rag_evals}", unsafe_allow_html=True)
+        st.markdown(f"<p><strong>RAG Triad Değerlendirmesi:</strong> <span class='highlight'>{rag_evals}</span></p>", unsafe_allow_html=True)
     else:
         st.error("Please process the video before asking a question.")
     st.markdown("</div>", unsafe_allow_html=True)
