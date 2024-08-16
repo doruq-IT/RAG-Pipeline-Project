@@ -29,14 +29,6 @@ st.markdown("""
             padding: 20px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        label {
-            font-weight: bold;
-            margin-bottom: 5px;
-            color: #333333;
         }
         .text-input {
             width: 100%;
@@ -44,6 +36,8 @@ st.markdown("""
             border-radius: 5px;
             border: 1px solid #dddddd;
             margin-bottom: 20px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
         }
         .button {
             display: inline-block;
@@ -81,7 +75,7 @@ st.markdown("<h1>RAG Pipeline with BeyondLLM</h1>", unsafe_allow_html=True)
 # Kullanıcıdan YouTube video linkini alma
 st.markdown("<div class='input-section'>", unsafe_allow_html=True)
 st.text("Enter the YouTube video URL:")
-video_url = st.text_input("", "https://www.youtube.com/watch?v=ZM1bdh2mDJQ", key="video_url")
+video_url = st.text_input("", "https://www.youtube.com/watch?v=ZM1bdh2mDJQ", key="video_url", placeholder="Enter the YouTube video URL")
 st.markdown("</div>", unsafe_allow_html=True)
 
 # Veri yükleme ve embedding işlemleri
@@ -111,7 +105,7 @@ if st.button("Process Video", key="process_button"):
 # Kullanıcıdan sorgu alma
 st.markdown("<div class='input-section'>", unsafe_allow_html=True)
 st.text("Enter your question:")
-question = st.text_input("", key="question")
+question = st.text_input("", key="question", placeholder="Enter your question here")
 st.markdown("</div>", unsafe_allow_html=True)
 
 # Model ve sorgu sonuçlarını gösterme
