@@ -55,16 +55,20 @@ if st.button("Get Answer"):
     </s>
     """
     
-    pipeline = generator.Generate(
-        question=question,
-        retriever=retriever,
-        system_prompt=system_prompt,
-        llm=llm
-    )
-    
-    response = pipeline.call()
-    st.write("Model yanıtı:", response)
-    
-    # RAG Triad değerlendirme sonuçlarını gösterme
-    rag_evals = pipeline.get_rag_triad_evals()
-    st.write("RAG Triad Değerlendirmesi:", rag_evals)
+    # retriever doğru sırada kullanılmalı
+    if 'retriever' in locals():
+        pipeline = generator.Generate(
+            question=question,
+            retriever=retriever,
+            system_prompt=system_prompt,
+            llm=llm
+        )
+        
+        response = pipeline.call()
+        st.write("Model yanıtı:", response)
+        
+        # RAG Triad değerlendirme sonuçlarını gösterme
+        rag_evals = pipeline.get_rag_triad_evals()
+        st.write("RAG Triad Değerlendirmesi:", rag_evals)
+    else:
+        st.error("Please process the video before asking a question.")
