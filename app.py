@@ -72,15 +72,23 @@ st.markdown("""
 
 st.markdown("<h1>RAG Pipeline with BeyondLLM</h1>", unsafe_allow_html=True)
 
-# Kullanıcıdan YouTube video linkini alma
-video_url = st.text_input("Enter the YouTube video URL:", "https://www.youtube.com/watch?v=ZM1bdh2mDJQ", key="video_url", label_visibility="collapsed")
+# Kullanıcıdan veri türünü seçme
+data_type = st.selectbox("Select the type of data to process:", ["YouTube Video", "PDF", "Web Page"])
+
+# Kullanıcıdan veri linkini alma
+if data_type == "YouTube Video":
+    data_url = st.text_input("Enter the YouTube video URL:", "https://www.youtube.com/watch?v=ZM1bdh2mDJQ", key="data_url", label_visibility="collapsed")
+elif data_type == "PDF":
+    data_url = st.text_input("Enter the PDF URL:", key="data_url", label_visibility="collapsed")
+elif data_type == "Web Page":
+    data_url = st.text_input("Enter the Web Page URL:", key="data_url", label_visibility="collapsed")
 
 # Veri yükleme ve embedding işlemleri
-if st.button("Process Video", key="process_button"):
+if st.button("Process Data", key="process_button"):
     with st.spinner("Processing..."):
         data = source.fit(
-            path=video_url,
-            dtype="youtube",
+            path=data_url,
+            dtype=data_type.lower(),
             chunk_size=1024,
             chunk_overlap=0
         )
@@ -97,7 +105,7 @@ if st.button("Process Video", key="process_button"):
             top_k=2
         )
         
-        st.success("Video processed successfully!")
+        st.success("Data processed successfully!")
 
 # Kullanıcıdan sorgu alma
 question = st.text_input("Enter your question:", key="question", label_visibility="collapsed")
@@ -133,5 +141,12 @@ if st.button("Get Answer", key="answer_button"):
         # RAG Triad değerlendirme sonuçlarını gösterme
         rag_evals = pipeline.get_rag_triad_evals()
         st.markdown(f"<p><strong>RAG Triad Değerlendirmesi:</strong> <span class='highlight'>{rag_evals}</span></p>", unsafe_allow_html=True)
+
+        # Kullanıcıdan geri bildirim alma
+        feedback = st.radio("Was this answer helpful?", ["Yes", "No"])
+        if feedback == "No":
+            feedback_comment = st.text_area("What was wrong with the answer? Please provide details.")
+        else:
+            st.success("Thank you for your feedback!")
     else:
-        st.error("Please process the video before asking a question.")
+        st.error("Please process the data before asking a question.")
