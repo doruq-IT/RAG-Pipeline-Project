@@ -8,14 +8,62 @@ os.environ['HF_TOKEN'] = config.HF_TOKEN
 os.environ['GOOGLE_API_KEY'] = config.GOOGLE_API_KEY
 os.environ['HUGGINGFACE_ACCESS_TOKEN'] = os.environ['HF_TOKEN']
 
-# Uygulama başlığı
-st.title("RAG Pipeline with BeyondLLM")
+# Uygulama başlığı ve giriş bölümü
+st.markdown("""
+    <style>
+        .main {
+            background-color: #f0f0f0;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        h1 {
+            color: #0073e6;
+            font-family: 'Helvetica Neue', sans-serif;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .input-section {
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .button {
+            display: block;
+            width: 100%;
+            background-color: #0073e6;
+            color: white;
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #005bb5;
+        }
+        .result-section {
+            background-color: #e6f7ff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+st.markdown("<h1>RAG Pipeline with BeyondLLM</h1>", unsafe_allow_html=True)
 
 # Kullanıcıdan YouTube video linkini alma
+st.markdown("<div class='input-section'>", unsafe_allow_html=True)
 video_url = st.text_input("Enter the YouTube video URL:", "https://www.youtube.com/watch?v=ZM1bdh2mDJQ")
 
 # Veri yükleme ve embedding işlemleri
-if st.button("Process Video"):
+if st.button("Process Video", key="process_button"):
     with st.spinner("Processing..."):
         data = source.fit(
             path=video_url,
@@ -37,12 +85,16 @@ if st.button("Process Video"):
         )
         
         st.success("Video processed successfully!")
+st.markdown("</div>", unsafe_allow_html=True)
 
 # Kullanıcıdan sorgu alma
+st.markdown("<div class='input-section'>", unsafe_allow_html=True)
 question = st.text_input("Enter your question:")
+st.markdown("</div>", unsafe_allow_html=True)
 
 # Model ve sorgu sonuçlarını gösterme
-if st.button("Get Answer"):
+if st.button("Get Answer", key="answer_button"):
+    st.markdown("<div class='result-section'>", unsafe_allow_html=True)
     if 'retriever' in st.session_state:
         llm = llms.HuggingFaceHubModel(
             model="mistralai/Mistral-7B-Instruct-v0.2",
@@ -65,10 +117,11 @@ if st.button("Get Answer"):
         )
         
         response = pipeline.call()
-        st.write("Model yanıtı:", response)
+        st.write(f"<strong>Model yanıtı:</strong> {response}", unsafe_allow_html=True)
         
         # RAG Triad değerlendirme sonuçlarını gösterme
         rag_evals = pipeline.get_rag_triad_evals()
-        st.write("RAG Triad Değerlendirmesi:", rag_evals)
+        st.write(f"<strong>RAG Triad Değerlendirmesi:</strong> {rag_evals}", unsafe_allow_html=True)
     else:
         st.error("Please process the video before asking a question.")
+    st.markdown("</div>", unsafe_allow_html=True)
