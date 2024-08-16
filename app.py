@@ -88,7 +88,7 @@ if st.button("Process Data", key="process_button"):
     with st.spinner("Processing..."):
         data = source.fit(
             path=data_url,
-            dtype=data_type.lower(),
+            dtype="youtube",
             chunk_size=1024,
             chunk_overlap=0
         )
