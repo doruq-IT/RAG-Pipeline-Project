@@ -3,12 +3,12 @@ import os
 from beyondllm import source, embeddings, retrieve, llms, generator
 import config
 
-# API Anahtarlarını config dosyasından yükleme
+# Loading API Keys from config file
 os.environ['HF_TOKEN'] = config.HF_TOKEN
 os.environ['GOOGLE_API_KEY'] = config.GOOGLE_API_KEY
 os.environ['HUGGINGFACE_ACCESS_TOKEN'] = os.environ['HF_TOKEN']
 
-# Uygulama başlığı ve giriş bölümü
+# Application title and introduction
 st.markdown("""
     <style>
         .main {
@@ -72,10 +72,10 @@ st.markdown("""
 
 st.markdown("<h1>RAG Pipeline with BeyondLLM</h1>", unsafe_allow_html=True)
 
-# Kullanıcıdan veri türünü seçme
+# Select data type from user
 data_type = st.selectbox("Select the type of data to process:", ["YouTube Video", "PDF", "Web Page"])
 st.markdown("**Note:** Currently, only English YouTube videos are supported.")
-# Kullanıcıdan veri linkini alma
+# Get the data link from the user
 if data_type == "YouTube Video":
     data_url = st.text_input("Enter the YouTube video URL:", "https://www.youtube.com/watch?v=ZM1bdh2mDJQ", key="data_url", label_visibility="collapsed")
 elif data_type == "PDF":
@@ -83,7 +83,7 @@ elif data_type == "PDF":
 elif data_type == "Web Page":
     data_url = st.text_input("Enter the Web Page URL:", key="data_url", label_visibility="collapsed")
 
-# Veri yükleme ve embedding işlemleri
+# Data loading and embedding operations
 if st.button("Process Data", key="process_button"):
     with st.spinner("Processing..."):
         data = source.fit(
@@ -96,7 +96,7 @@ if st.button("Process Data", key="process_button"):
         model_name = 'BAAI/bge-small-en-v1.5'
         embed_model = embeddings.HuggingFaceEmbeddings(model_name=model_name)
         
-        # Retriever'ı session state'e kaydetme
+        # Save retriever to session state
         st.session_state['retriever'] = retrieve.auto_retriever(
             data=data,
             embed_model=embed_model,
@@ -107,10 +107,10 @@ if st.button("Process Data", key="process_button"):
         
         st.success("Data processed successfully!")
 
-# Kullanıcıdan sorgu alma
+# Get query from user
 question = st.text_input("Enter your question:", key="question", label_visibility="collapsed")
 
-# Model ve sorgu sonuçlarını gösterme
+# Show model and query results
 if st.button("Get Answer", key="answer_button"):
     if 'retriever' in st.session_state:
         st.markdown("<div class='result-section'>", unsafe_allow_html=True)
@@ -138,11 +138,11 @@ if st.button("Get Answer", key="answer_button"):
         response = pipeline.call()
         st.markdown(f"<p><strong>Model yanıtı:</strong> <span class='highlight'>{response}</span></p>", unsafe_allow_html=True)
         
-        # RAG Triad değerlendirme sonuçlarını gösterme
+        # Displaying RAG Triad assessment results
         rag_evals = pipeline.get_rag_triad_evals()
         st.markdown(f"<p><strong>RAG Triad Değerlendirmesi:</strong> <span class='highlight'>{rag_evals}</span></p>", unsafe_allow_html=True)
 
-        # Kullanıcıdan geri bildirim alma
+        # Getting feedback from the user
         feedback = st.radio("Was this answer helpful?", ["Yes", "No"])
         if feedback == "No":
             feedback_comment = st.text_area("What was wrong with the answer? Please provide details.")
