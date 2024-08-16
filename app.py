@@ -53,9 +53,6 @@ st.markdown("""
             padding: 20px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        .spacer {
-            height: 10px;
-        }
         .highlight {
             background-color: #ffefc3;
             padding: 5px;
@@ -95,8 +92,6 @@ if st.button("Process Video", key="process_button"):
         )
         
         st.success("Video processed successfully!")
-
-st.markdown("<div class='spacer'></div>", unsafe_allow_html=True)
 
 # Kullanıcıdan sorgu alma
 st.markdown("<div class='input-section'>", unsafe_allow_html=True)
