@@ -74,8 +74,7 @@ st.markdown("<h1>RAG Pipeline with BeyondLLM</h1>", unsafe_allow_html=True)
 
 # Kullanıcıdan YouTube video linkini alma
 st.markdown("<div class='input-section'>", unsafe_allow_html=True)
-st.text("Enter the YouTube video URL:")
-video_url = st.text_input("", "https://www.youtube.com/watch?v=ZM1bdh2mDJQ", key="video_url", placeholder="Enter the YouTube video URL")
+video_url = st.text_input("Enter the YouTube video URL:", "https://www.youtube.com/watch?v=ZM1bdh2mDJQ", key="video_url", label_visibility="collapsed")
 st.markdown("</div>", unsafe_allow_html=True)
 
 # Veri yükleme ve embedding işlemleri
@@ -104,8 +103,7 @@ if st.button("Process Video", key="process_button"):
 
 # Kullanıcıdan sorgu alma
 st.markdown("<div class='input-section'>", unsafe_allow_html=True)
-st.text("Enter your question:")
-question = st.text_input("", key="question", placeholder="Enter your question here")
+question = st.text_input("Enter your question:", key="question", label_visibility="collapsed")
 st.markdown("</div>", unsafe_allow_html=True)
 
 # Model ve sorgu sonuçlarını gösterme
