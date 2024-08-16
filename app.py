@@ -74,7 +74,7 @@ st.markdown("<h1>RAG Pipeline with BeyondLLM</h1>", unsafe_allow_html=True)
 
 # Kullanıcıdan veri türünü seçme
 data_type = st.selectbox("Select the type of data to process:", ["YouTube Video", "PDF", "Web Page"])
-
+st.markdown("**Note:** Currently, only English YouTube videos are supported.")
 # Kullanıcıdan veri linkini alma
 if data_type == "YouTube Video":
     data_url = st.text_input("Enter the YouTube video URL:", "https://www.youtube.com/watch?v=ZM1bdh2mDJQ", key="data_url", label_visibility="collapsed")
