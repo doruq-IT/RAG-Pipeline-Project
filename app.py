@@ -67,24 +67,28 @@ st.markdown("""
             border-radius: 5px;
             font-weight: bold;
         }
+        .disabled-option {
+            color: #d3d3d3;
+        }
     </style>
 """, unsafe_allow_html=True)
 
 st.markdown("<h1>RAG Pipeline with BeyondLLM</h1>", unsafe_allow_html=True)
 
-# Select data type from user
-data_type = st.selectbox("Select the type of data to process:", ["YouTube Video", "PDF", "Web Page"])
-st.markdown("**Note:** Currently, only English YouTube videos are supported.")
-# Get the data link from the user
-if data_type == "YouTube Video":
-    data_url = st.text_input("Enter the YouTube video URL:", "https://www.youtube.com/watch?v=ZM1bdh2mDJQ", key="data_url", label_visibility="collapsed")
-elif data_type == "PDF":
-    data_url = st.text_input("Enter the PDF URL:", key="data_url", label_visibility="collapsed")
-elif data_type == "Web Page":
-    data_url = st.text_input("Enter the Web Page URL:", key="data_url", label_visibility="collapsed")
+# Select data type from user (Only YouTube Video is selectable)
+data_type = st.selectbox(
+    "Select the type of data to process:", 
+    [("YouTube Video", True), ("PDF (coming soon)", False), ("Web Page (coming soon)", False)], 
+    format_func=lambda x: x[0]
+)
 
-# Data loading and embedding operations
-if st.button("Process Data", key="process_button"):
+# Get the data link from the user (only if YouTube Video is selected)
+if data_type[1]:
+    data_url = st.text_input("Enter the YouTube video URL:", "https://www.youtube.com/watch?v=ZM1bdh2mDJQ", key="data_url", label_visibility="collapsed")
+    st.markdown("**Note:** Currently, only English YouTube videos are supported.")
+
+# Data loading and embedding operations (only if YouTube Video is selected)
+if st.button("Process Data", key="process_button") and data_type[1]:
     with st.spinner("Processing..."):
         data = source.fit(
             path=data_url,
@@ -107,11 +111,12 @@ if st.button("Process Data", key="process_button"):
         
         st.success("Data processed successfully!")
 
-# Get query from user
-question = st.text_input("Enter your question:", key="question", label_visibility="collapsed")
+# Get query from user (only if YouTube Video is selected)
+if data_type[1]:
+    question = st.text_input("Enter your question:", key="question", label_visibility="collapsed")
 
-# Show model and query results
-if st.button("Get Answer", key="answer_button"):
+# Show model and query results (only if YouTube Video is selected)
+if st.button("Get Answer", key="answer_button") and data_type[1]:
     if 'retriever' in st.session_state:
         st.markdown("<div class='result-section'>", unsafe_allow_html=True)
         
