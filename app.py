@@ -1,15 +1,16 @@
 import streamlit as st
 import os
 from beyondllm import source, embeddings, retrieve, llms, generator
-import config
 
-# Loading API Keys from config file
+# Loading API Keys from secrets
 try:
     os.environ['HF_TOKEN'] = st.secrets["HF_TOKEN"]
     os.environ['GOOGLE_API_KEY'] = st.secrets["GOOGLE_API_KEY"]
     os.environ['HUGGINGFACE_ACCESS_TOKEN'] = os.environ['HF_TOKEN']
+    st.write("API keys loaded successfully.")
 except KeyError as e:
     st.error(f"Required secret key is missing: {e}")
+    st.stop()  # Stop the app if secrets are missing
 
 # Application title and introduction
 st.markdown("""
@@ -93,26 +94,33 @@ if data_type[1]:
 # Data loading and embedding operations (only if YouTube Video is selected)
 if st.button("Process Data", key="process_button") and data_type[1]:
     with st.spinner("Processing..."):
-        data = source.fit(
-            path=data_url,
-            dtype="youtube",
-            chunk_size=1024,
-            chunk_overlap=0
-        )
-        
-        model_name = 'BAAI/bge-small-en-v1.5'
-        embed_model = embeddings.HuggingFaceEmbeddings(model_name=model_name)
-        
-        # Save retriever to session state
-        st.session_state['retriever'] = retrieve.auto_retriever(
-            data=data,
-            embed_model=embed_model,
-            type="cross-rerank",
-            mode="OR",
-            top_k=2
-        )
-        
-        st.success("Data processed successfully!")
+        try:
+            st.write(f"Loading video from URL: {data_url}")
+            data = source.fit(
+                path=data_url,
+                dtype="youtube",
+                chunk_size=1024,
+                chunk_overlap=0
+            )
+            st.write("Video data loaded successfully.")
+            
+            model_name = 'BAAI/bge-small-en-v1.5'
+            embed_model = embeddings.HuggingFaceEmbeddings(model_name=model_name)
+            st.write("Embedding model loaded successfully.")
+
+            # Save retriever to session state
+            st.session_state['retriever'] = retrieve.auto_retriever(
+                data=data,
+                embed_model=embed_model,
+                type="cross-rerank",
+                mode="OR",
+                top_k=2
+            )
+            st.success("Data processed successfully!")
+
+        except Exception as e:
+            st.error(f"An error occurred while processing data: {e}")
+            st.stop()
 
 # Get query from user (only if YouTube Video is selected)
 if data_type[1]:
@@ -123,38 +131,43 @@ if st.button("Get Answer", key="answer_button") and data_type[1]:
     if 'retriever' in st.session_state:
         st.markdown("<div class='result-section'>", unsafe_allow_html=True)
         
-        llm = llms.HuggingFaceHubModel(
-            model="mistralai/Mistral-7B-Instruct-v0.2",
-            token=os.environ.get('HF_TOKEN')
-        )
-        
-        system_prompt = f"""
-        <s>[INST]
-        You are an AI Assistant.
-        Please provide direct answers to questions.
-        [/INST]
-        </s>
-        """
-        
-        pipeline = generator.Generate(
-            question=question,
-            retriever=st.session_state['retriever'],
-            system_prompt=system_prompt,
-            llm=llm
-        )
-        
-        response = pipeline.call()
-        st.markdown(f"<p><strong>Model response:</strong> <span class='highlight'>{response}</span></p>", unsafe_allow_html=True)
-        
-        # Displaying RAG Triad assessment results
-        rag_evals = pipeline.get_rag_triad_evals()
-        st.markdown(f"<p><strong>RAG Triad Evaluation:</strong> <span class='highlight'>{rag_evals}</span></p>", unsafe_allow_html=True)
+        try:
+            llm = llms.HuggingFaceHubModel(
+                model="mistralai/Mistral-7B-Instruct-v0.2",
+                token=os.environ.get('HF_TOKEN')
+            )
+            st.write("Language model loaded successfully.")
+            
+            system_prompt = f"""
+            <s>[INST]
+            You are an AI Assistant.
+            Please provide direct answers to questions.
+            [/INST]
+            </s>
+            """
+            
+            pipeline = generator.Generate(
+                question=question,
+                retriever=st.session_state['retriever'],
+                system_prompt=system_prompt,
+                llm=llm
+            )
+            
+            response = pipeline.call()
+            st.markdown(f"<p><strong>Model response:</strong> <span class='highlight'>{response}</span></p>", unsafe_allow_html=True)
+            
+            # Displaying RAG Triad assessment results
+            rag_evals = pipeline.get_rag_triad_evals()
+            st.markdown(f"<p><strong>RAG Triad Evaluation:</strong> <span class='highlight'>{rag_evals}</span></p>", unsafe_allow_html=True)
 
-        # Getting feedback from the user
-        feedback = st.radio("Was this answer helpful?", ["Yes", "No"])
-        if feedback == "No":
-            feedback_comment = st.text_area("What was wrong with the answer? Please provide details.")
-        else:
-            st.success("Thank you for your feedback!")
+            # Getting feedback from the user
+            feedback = st.radio("Was this answer helpful?", ["Yes", "No"])
+            if feedback == "No":
+                feedback_comment = st.text_area("What was wrong with the answer? Please provide details.")
+            else:
+                st.success("Thank you for your feedback!")
+        
+        except Exception as e:
+            st.error(f"An error occurred while generating the answer: {e}")
     else:
         st.error("Please process the data before asking a question.")
