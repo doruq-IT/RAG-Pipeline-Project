@@ -4,8 +4,8 @@ from beyondllm import source, embeddings, retrieve, llms, generator
 import config
 
 # Loading API Keys from config file
-os.environ['HF_TOKEN'] = st.secrets["general"]["HF_TOKEN"]
-os.environ['GOOGLE_API_KEY'] = st.secrets["general"]["GOOGLE_API_KEY"]
+os.environ['HF_TOKEN'] = st.secrets["HF_TOKEN"]
+os.environ['GOOGLE_API_KEY'] = st.secrets["GOOGLE_API_KEY"]
 os.environ['HUGGINGFACE_ACCESS_TOKEN'] = os.environ['HF_TOKEN']
 
 # Application title and introduction
