@@ -4,8 +4,8 @@ from beyondllm import source, embeddings, retrieve, llms, generator
 import config
 
 # Loading API Keys from config file
-os.environ['HF_TOKEN'] = config.HF_TOKEN
-os.environ['GOOGLE_API_KEY'] = config.GOOGLE_API_KEY
+os.environ['HF_TOKEN'] = st.secrets["general"]["HF_TOKEN"]
+os.environ['GOOGLE_API_KEY'] = st.secrets["general"]["GOOGLE_API_KEY"]
 os.environ['HUGGINGFACE_ACCESS_TOKEN'] = os.environ['HF_TOKEN']
 
 # Application title and introduction
@@ -141,11 +141,11 @@ if st.button("Get Answer", key="answer_button") and data_type[1]:
         )
         
         response = pipeline.call()
-        st.markdown(f"<p><strong>Model yanıtı:</strong> <span class='highlight'>{response}</span></p>", unsafe_allow_html=True)
+        st.markdown(f"<p><strong>Model response:</strong> <span class='highlight'>{response}</span></p>", unsafe_allow_html=True)
         
         # Displaying RAG Triad assessment results
         rag_evals = pipeline.get_rag_triad_evals()
-        st.markdown(f"<p><strong>RAG Triad Değerlendirmesi:</strong> <span class='highlight'>{rag_evals}</span></p>", unsafe_allow_html=True)
+        st.markdown(f"<p><strong>RAG Triad Evaluation:</strong> <span class='highlight'>{rag_evals}</span></p>", unsafe_allow_html=True)
 
         # Getting feedback from the user
         feedback = st.radio("Was this answer helpful?", ["Yes", "No"])
